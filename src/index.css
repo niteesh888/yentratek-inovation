@@ -1,0 +1,48 @@
+/* ✅ Import Tailwind */
+@import "tailwindcss";
+
+/* 🌟 Your global font */
+body {
+  font-family: system-ui, sans-serif;
+}
+
+/* 🌟 Animations (your originals) */
+@keyframes zoom {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.06); }
+}
+
+@keyframes imgFloat {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-6px) scale(1.03); }
+}
+
+.animate-zoom {
+  animation: zoom 6s ease-in-out infinite;
+}
+
+.animate-img {
+  animation: imgFloat 6s ease-in-out infinite;
+}
+
+/* ================= SAFE FIXES ================= */
+
+/* Prevent horizontal scroll */
+html, body {
+  max-width: 100%;
+  overflow-x: hidden; /* 🔥 kill right-side scroll */
+}
+
+/* Make sure images/videos don’t overflow */
+img, video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+}
+
+/* Prevent flex/grid children from causing overflow */
+* {
+  box-sizing: border-box;
+  min-width: 0;
+}

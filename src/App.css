@@ -1,0 +1,146 @@
+/* ================= SAFE GLOBAL GUARDS (non-invasive) =================
+   These rules are intentionally conservative so they don't override your
+   existing layout. They help prevent horizontal overflow on small screens.
+*/
+
+/* keep this minimal - allow other CSS to control visuals */
+ html, body {
+  width: 100%;
+  min-width: 0;
+  overflow-x: hidden; /* hide accidental horizontal overflow on small screens */
+  -webkit-overflow-scrolling: touch;
+}
+
+/* consistent box-sizing so padding doesn't create surprises */
+*, *::before, *::after {
+  box-sizing: border-box;
+  min-width: 0;
+}
+
+/* responsive media */
+img, svg, video, picture {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* clamp common fixed/absolute/floating items (safe, no !important) */
+.fixed, .absolute, .floating, .some-absolute-or-fixed {
+  max-width: 100vw;
+  box-sizing: border-box;
+}
+
+/* small helper: if some element used 100vw inline, this attempts to limit it */
+*[style*="100vw"], .uses-100vw, .full-vw {
+  width: 100%;
+  max-width: 100%;
+}
+
+/* ================= SLIDER (react-slick) SAFETY - gentle rules ================= */
+.slick-list {
+  overflow: hidden; /* prevents track from pushing page width */
+}
+.slick-track {
+  display: flex;
+  transform: translate3d(0,0,0);
+}
+.slick-slide {
+  min-width: 0;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.slick-slide > * {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ================= HEADER / TOPBAR SAFE RULES (avoid pushing width) ================= */
+.header, .site-header, .topbar {
+  width: 100%;
+  max-width: 100%;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+}
+
+/* ================= WHATSAPP / FLOATING BUBBLE ================= */
+/* Apply .whatsapp-float to the bubble element in your markup */
+.whatsapp-float {
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  width: 56px;
+  height: 56px;
+  min-width: 56px;
+  min-height: 56px;
+  border-radius: 50%;
+  z-index: 9999;
+  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateZ(0);
+}
+
+/* ================= ROOT / CONTAINER (safe small-screen padding) ================= */
+#root, .app-root, .site-wrapper, .container {
+  width: 100%;
+  max-width: 1280px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  box-sizing: border-box;
+}
+
+/* ================= SMALL-SCREEN TARGETED FIXES (only triggers under 480px) ================= */
+@media (max-width: 480px) {
+  /* reduce risk of overflow from large paddings or unusually wide elements */
+  #root, .app-root, .site-wrapper, .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+    overflow-x: hidden;
+  }
+
+  /* clamp common hero/slide card selectors used in many projects.
+     If your hero uses different selectors, replace .hero-card/.slide-card with them. */
+  .hero-card, .slide-card, .slide-item, .promo-card {
+    width: 100%;
+    max-width: 100%;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    box-sizing: border-box;
+  }
+
+  /* ensure arrows don't escape the viewport on tiny screens */
+  .slick-prev, .slick-next, .carousel-arrow {
+    left: auto;
+    right: auto;
+    transform: none;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  /* clamp floating chat bubble tighter on very small screens */
+  .whatsapp-float, .chat-bubble {
+    right: 12px;
+    left: auto;
+    max-width: 56px;
+    width: 56px;
+  }
+}
+
+/* ================= DEBUG HELPER (toggle via console: document.body.classList.add('debug-overflow')) */
+/* body.debug-overflow * { outline: 1px solid rgba(255,0,0,0.06); } */
+
+/* ================= NOTES
+ - This file is purposely conservative. If the right-gap persists, use the console
+   offender command (DevTools Console) and paste the top 3 offenders here:
+   [...document.querySelectorAll('*')].map(el=>({el, r:el.getBoundingClientRect()})).filter(o=>o.r.right>window.innerWidth+1).map(o=>({tag:o.el.tagName.toLowerCase(), cls:o.el.className?'.'+o.el.className.split(/\s+/).join('.'):'(no-class)', left:Math.round(o.r.left), right:Math.round(o.r.right), width:Math.round(o.r.width)})).slice(0,10)
+ - If a specific selector from that output shows up (for example ".hero-card" or ".slick-track"),
+   I'll give you the exact single CSS rule to paste (guaranteed fix).
+ - If you used `!important` elsewhere in your project that forced width behavior, we may need to remove/override that specific rule.
+*/
+
